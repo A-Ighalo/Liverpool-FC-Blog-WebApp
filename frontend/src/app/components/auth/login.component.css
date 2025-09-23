@@ -1,0 +1,131 @@
+:root {
+  --lfc-red: #C8102E;
+  --lfc-gold: #F6EB14;
+  --lfc-dark: #00263E;
+  --lfc-light: #F5F5F5;
+}
+
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--lfc-red) 0%, var(--lfc-dark) 100%);
+  padding: 20px;
+}
+
+.auth-card {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.auth-header h1 {
+  color: var(--lfc-dark);
+  margin-bottom: 10px;
+  font-size: 2rem;
+}
+
+.auth-header p {
+  color: #666;
+  margin: 0;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--lfc-dark);
+  font-weight: 600;
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--lfc-red);
+}
+
+.form-control.error {
+  border-color: #dc3545;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.9rem;
+  margin-top: 5px;
+  text-align: center;
+}
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: var(--lfc-red);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #a60e26;
+  transform: translateY(-2px);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.auth-footer a {
+  color: var(--lfc-red);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 30px 20px;
+  }
+  
+  .auth-header h1 {
+    font-size: 1.5rem;
+  }
+}
