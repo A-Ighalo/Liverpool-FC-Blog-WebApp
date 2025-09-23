@@ -1,0 +1,119 @@
+<div class="home-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1>Welcome to Liverpool FC Hub</h1>
+      <p>Your ultimate destination for Liverpool FC news, stats, and match updates</p>
+      <div class="hero-buttons">
+        <a routerLink="/blog" class="btn btn-primary">Latest News</a>
+        <a routerLink="/stats" class="btn btn-secondary">Player Stats</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <img src="/assets/liverpool-logo.png" alt="Liverpool FC" />
+    </div>
+  </section>
+
+  <div class="content-sections" *ngIf="!loading">
+    <!-- Latest Blog Posts -->
+    <section class="latest-posts">
+      <h2>Latest News</h2>
+      <div class="posts-grid" *ngIf="latestPosts.length > 0; else noPosts">
+        <div class="post-card" *ngFor="let post of latestPosts">
+          <div class="post-image" *ngIf="post.imageUrl">
+            <img [src]="post.imageUrl" [alt]="post.title" />
+          </div>
+          <div class="post-content">
+            <h3>{{ post.title }}</h3>
+            <p>{{ post.summary }}</p>
+            <div class="post-meta">
+              <span>{{ formatDate(post.publishedAt) }}</span>
+              <span *ngIf="post.author">by {{ post.author.username }}</span>
+            </div>
+            <a [routerLink]="['/blog', post.id]" class="read-more">Read More</a>
+          </div>
+        </div>
+      </div>
+      <ng-template #noPosts>
+        <p>No blog posts available.</p>
+      </ng-template>
+      <div class="section-footer">
+        <a routerLink="/blog" class="view-all">View All Posts →</a>
+      </div>
+    </section>
+
+    <!-- Upcoming Fixtures -->
+    <section class="upcoming-fixtures">
+      <h2>Upcoming Fixtures</h2>
+      <div class="fixtures-list" *ngIf="upcomingFixtures.length > 0; else noUpcoming">
+        <div class="fixture-card" *ngFor="let fixture of upcomingFixtures">
+          <div class="fixture-date">{{ formatDate(fixture.matchDate) }}</div>
+          <div class="fixture-teams">
+            <span class="home-team">{{ fixture.homeTeam }}</span>
+            <span class="vs">vs</span>
+            <span class="away-team">{{ fixture.awayTeam }}</span>
+          </div>
+          <div class="fixture-competition">{{ fixture.competition }}</div>
+          <div class="fixture-venue" *ngIf="fixture.venue">{{ fixture.venue }}</div>
+        </div>
+      </div>
+      <ng-template #noUpcoming>
+        <p>No upcoming fixtures.</p>
+      </ng-template>
+    </section>
+
+    <!-- Recent Results -->
+    <section class="recent-results">
+      <h2>Recent Results</h2>
+      <div class="fixtures-list" *ngIf="recentFixtures.length > 0; else noRecent">
+        <div class="fixture-card result-card" *ngFor="let fixture of recentFixtures">
+          <div class="fixture-date">{{ formatDate(fixture.matchDate) }}</div>
+          <div class="fixture-teams">
+            <span class="home-team">{{ fixture.homeTeam }}</span>
+            <span class="score" *ngIf="fixture.homeScore !== null && fixture.awayScore !== null">
+              {{ fixture.homeScore }} - {{ fixture.awayScore }}
+            </span>
+            <span class="away-team">{{ fixture.awayTeam }}</span>
+          </div>
+          <div class="fixture-competition">{{ fixture.competition }}</div>
+        </div>
+      </div>
+      <ng-template #noRecent>
+        <p>No recent results.</p>
+      </ng-template>
+    </section>
+
+    <!-- Top Scorers -->
+    <section class="top-scorers">
+      <h2>Top Scorers</h2>
+      <div class="scorers-list" *ngIf="topScorers.length > 0; else noScorers">
+        <div class="scorer-card" *ngFor="let player of topScorers; let i = index">
+          <div class="scorer-rank">{{ i + 1 }}</div>
+          <div class="scorer-info">
+            <img *ngIf="player.playerImageUrl" [src]="player.playerImageUrl" [alt]="player.playerName" class="player-image" />
+            <div class="player-details">
+              <h4>{{ player.playerName }}</h4>
+              <span class="position">{{ player.position }}</span>
+            </div>
+          </div>
+          <div class="scorer-stats">
+            <span class="goals">{{ player.goals }} goals</span>
+            <span class="appearances">{{ player.appearances }} apps</span>
+          </div>
+        </div>
+      </div>
+      <ng-template #noScorers>
+        <p>No player statistics available.</p>
+      </ng-template>
+      <div class="section-footer">
+        <a routerLink="/stats" class="view-all">View All Stats →</a>
+      </div>
+    </section>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <div class="loading-spinner"></div>
+    <p>Loading Liverpool FC data...</p>
+  </div>
+</div>
