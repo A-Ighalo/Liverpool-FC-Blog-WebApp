@@ -66,6 +66,7 @@ public class WebSecurityConfig {
                     .requestMatchers("/api/blog/public/**").permitAll()
                     .requestMatchers("/api/fixtures/public/**").permitAll()
                     .requestMatchers("/api/stats/public/**").permitAll()
+                    .requestMatchers("/api/live/public/**").permitAll()
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
             );

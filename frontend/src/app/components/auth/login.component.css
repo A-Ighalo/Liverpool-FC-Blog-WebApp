@@ -1,16 +1,16 @@
 :root {
   --lfc-red: #C8102E;
   --lfc-gold: #F6EB14;
-  --lfc-dark: #00263E;
+  --lfc-dark: #1A1A1A;
   --lfc-light: #F5F5F5;
 }
 
 .auth-container {
-  min-height: 100vh;
+  min-height: 70vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--lfc-red) 0%, var(--lfc-dark) 100%);
+  background: linear-gradient(135deg, var(--lfc-red) 0%, var(--lfc-red-deep) 100%);
   padding: 20px;
 }
 

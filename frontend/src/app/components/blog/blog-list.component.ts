@@ -9,180 +9,152 @@ import { BlogPost, BlogPostPage } from '../../models/blog.model';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="blog-container">
-      <header class="blog-header">
-        <h1>Liverpool FC Blog</h1>
-        <p>Latest news and updates from Anfield</p>
-      </header>
+    <section class="page-banner">
+      <div class="container">
+        <span class="eyebrow">Written by fans</span>
+        <h1>Fan Blog</h1>
+        <p>Opinion, analysis and match reactions from Liverpool FC Hub members.</p>
+      </div>
+    </section>
 
-      <div class="blog-content" *ngIf="!loading">
-        <div class="posts-grid" *ngIf="posts.length > 0; else noPosts">
-          <article class="post-card" *ngFor="let post of posts">
-            <div class="post-image" *ngIf="post.imageUrl">
-              <img [src]="post.imageUrl" [alt]="post.title" />
-            </div>
-            <div class="post-content">
-              <h2>{{ post.title }}</h2>
-              <p class="post-summary">{{ post.summary }}</p>
-              <div class="post-meta">
-                <span>{{ formatDate(post.publishedAt) }}</span>
-                <span *ngIf="post.author">by {{ post.author.username }}</span>
+    <section class="section">
+      <div class="container">
+        <ng-container *ngIf="!loading; else loadingTpl">
+          <div class="posts-grid" *ngIf="posts.length > 0; else noPosts">
+            <a class="post-card card" *ngFor="let post of posts" [routerLink]="['/blog', post.id]">
+              <div class="post-image">
+                <img *ngIf="post.imageUrl" [src]="post.imageUrl" [alt]="post.title" loading="lazy" />
+                <img *ngIf="!post.imageUrl" src="https://a.espncdn.com/i/teamlogos/soccer/500/364.png" alt="" class="crest" />
               </div>
-              <a [routerLink]="['/blog', post.id]" class="read-more">Read Full Article →</a>
-            </div>
-          </article>
-        </div>
-        
-        <ng-template #noPosts>
-          <div class="no-posts">
-            <h3>No blog posts available</h3>
-            <p>Check back later for the latest Liverpool FC news!</p>
+              <div class="post-content">
+                <span class="tag">Fan Blog</span>
+                <h2>{{ post.title }}</h2>
+                <p class="post-summary">{{ post.summary }}</p>
+                <span class="meta">
+                  <ng-container *ngIf="post.author">{{ post.author.username }} · </ng-container>{{ formatDate(post.publishedAt) }}
+                </span>
+              </div>
+            </a>
           </div>
+
+          <ng-template #noPosts>
+            <div class="no-posts card">
+              <h3>No blog posts yet</h3>
+              <p>Posts written by Hub members will appear here. Check back soon.</p>
+            </div>
+          </ng-template>
+
+          <div class="pagination" *ngIf="totalPages > 1">
+            <button (click)="loadPage(currentPage - 1)" [disabled]="currentPage === 0" class="btn btn-outline" type="button">Previous</button>
+            <span class="page-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+            <button (click)="loadPage(currentPage + 1)" [disabled]="currentPage === totalPages - 1" class="btn btn-outline" type="button">Next</button>
+          </div>
+        </ng-container>
+
+        <ng-template #loadingTpl>
+          <div class="loading-state"><div class="spinner"></div>Loading blog posts…</div>
         </ng-template>
-
-        <div class="pagination" *ngIf="totalPages > 1">
-          <button (click)="loadPage(currentPage - 1)" [disabled]="currentPage === 0" class="btn btn-outline">
-            Previous
-          </button>
-          <span class="page-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
-          <button (click)="loadPage(currentPage + 1)" [disabled]="currentPage === totalPages - 1" class="btn btn-outline">
-            Next
-          </button>
-        </div>
       </div>
-
-      <div class="loading" *ngIf="loading">
-        <div class="loading-spinner"></div>
-        <p>Loading blog posts...</p>
-      </div>
-    </div>
+    </section>
   `,
   styles: [`
-    .blog-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 40px 20px;
-    }
-
-    .blog-header {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-
-    .blog-header h1 {
-      color: #C8102E;
-      font-size: 3rem;
-      margin-bottom: 10px;
-    }
-
     .posts-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 30px;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
     }
 
     .post-card {
-      background: white;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
     }
 
     .post-card:hover {
-      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
+    }
+
+    .post-card:hover h2 {
+      color: var(--lfc-red);
+    }
+
+    .post-image {
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, var(--lfc-red), var(--lfc-red-deep));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
 
     .post-image img {
       width: 100%;
-      height: 250px;
+      height: 100%;
       object-fit: cover;
     }
 
+    .post-image img.crest {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+    }
+
     .post-content {
-      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 16px;
+      flex: 1;
     }
 
     .post-content h2 {
-      color: #00263E;
-      margin-bottom: 15px;
       font-size: 1.5rem;
+      transition: color 0.2s ease;
     }
 
     .post-summary {
-      color: #666;
-      margin-bottom: 20px;
-      line-height: 1.6;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
-    .post-meta {
-      font-size: 0.9rem;
-      color: #999;
-      margin-bottom: 20px;
-    }
-
-    .read-more {
-      color: #C8102E;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .read-more:hover {
-      text-decoration: underline;
+    .post-content .meta {
+      margin-top: auto;
+      padding-top: 6px;
     }
 
     .no-posts {
       text-align: center;
-      padding: 60px 20px;
-      color: #666;
+      padding: 48px 16px;
+    }
+
+    .no-posts h3 {
+      font-size: 1.6rem;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .no-posts p {
+      color: var(--text-muted);
     }
 
     .pagination {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 20px;
-      margin-top: 40px;
+      gap: 16px;
+      margin-top: 32px;
     }
 
-    .btn {
-      padding: 10px 20px;
-      border: 2px solid #C8102E;
-      background: transparent;
-      color: #C8102E;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .btn:hover:not(:disabled) {
-      background: #C8102E;
-      color: white;
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 60px 20px;
-    }
-
-    .loading-spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #C8102E;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 20px;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    .page-info {
+      font-size: 0.9rem;
+      color: var(--text-muted);
     }
   `]
 })
@@ -217,10 +189,10 @@ export class BlogListComponent implements OnInit {
 
   formatDate(date: Date | undefined): string {
     if (!date) return '';
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
+    return new Date(date).toLocaleDateString('en-GB', {
+      day: 'numeric',
       month: 'long',
-      day: 'numeric'
+      year: 'numeric'
     });
   }
 }

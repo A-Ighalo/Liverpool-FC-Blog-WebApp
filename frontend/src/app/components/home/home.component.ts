@@ -1,74 +1,68 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BlogService } from '../../services/blog.service';
-import { StatsService } from '../../services/stats.service';
-import { BlogPost } from '../../models/blog.model';
-import { PlayerStats, Fixture } from '../../models/stats.model';
 import { RouterModule } from '@angular/router';
+import { Observable, combineLatest, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { BlogService } from '../../services/blog.service';
+import { LiveDataService } from '../../services/live-data.service';
+import { BlogPost } from '../../models/blog.model';
+import { Match, NewsArticle, StatLeader, TableRow } from '../../models/live.model';
+import { MatchCardComponent } from '../../shared/match-card.component';
+import { NewsCardComponent } from '../../shared/news-card.component';
+import { TimeAgoPipe } from '../../shared/time-ago.pipe';
+
+interface MatchCentre {
+  cards: { label: string; match: Match; featured: boolean }[];
+  form: Match[];
+}
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, MatchCardComponent, NewsCardComponent, TimeAgoPipe],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
-  latestPosts: BlogPost[] = [];
-  upcomingFixtures: Fixture[] = [];
-  recentFixtures: Fixture[] = [];
-  topScorers: PlayerStats[] = [];
-  loading = true;
+export class HomeComponent {
+  readonly liverpoolId = LiveDataService.LIVERPOOL_ID;
+  readonly news$: Observable<NewsArticle[]>;
+  readonly matchCentre$: Observable<MatchCentre>;
+  readonly tableSnippet$: Observable<TableRow[]>;
+  readonly leaders$: Observable<{ goals: StatLeader[]; assists: StatLeader[] }>;
+  readonly posts$: Observable<BlogPost[]>;
 
-  constructor(
-    private blogService: BlogService,
-    private statsService: StatsService
-  ) { }
+  constructor(liveData: LiveDataService, blogService: BlogService) {
+    this.news$ = liveData.getNews(12);
 
-  ngOnInit(): void {
-    this.loadHomeData();
-  }
+    this.matchCentre$ = combineLatest([liveData.getResults(), liveData.getFixtures()]).pipe(
+      map(([results, fixtures]) => {
+        const cards: MatchCentre['cards'] = [];
+        if (results[0]) cards.push({ label: 'Last match', match: results[0], featured: false });
+        if (fixtures[0]) cards.push({ label: 'Next match', match: fixtures[0], featured: true });
+        if (fixtures[1]) cards.push({ label: 'Coming up', match: fixtures[1], featured: false });
+        return { cards, form: results.filter(r => r.result).slice(0, 5).reverse() };
+      })
+    );
 
-  loadHomeData(): void {
-    // Load latest blog posts
-    this.blogService.getPublishedPosts(0, 3).subscribe({
-      next: (data) => {
-        this.latestPosts = data.content;
-      },
-      error: (error) => console.error('Error loading blog posts:', error)
-    });
+    this.tableSnippet$ = liveData.getTable().pipe(
+      map(rows => {
+        const index = rows.findIndex(r => r.team.id === this.liverpoolId);
+        if (index < 0) return rows.slice(0, 5);
+        const start = Math.min(Math.max(index - 2, 0), Math.max(rows.length - 5, 0));
+        return rows.slice(start, start + 5);
+      })
+    );
 
-    // Load upcoming fixtures
-    this.statsService.getUpcomingFixtures().subscribe({
-      next: (data) => {
-        this.upcomingFixtures = data.slice(0, 3);
-      },
-      error: (error) => console.error('Error loading upcoming fixtures:', error)
-    });
+    this.leaders$ = liveData.getLeaders().pipe(
+      map(leaders => ({
+        goals: leaders.goals.filter(l => l.isLiverpool).slice(0, 3),
+        assists: leaders.assists.filter(l => l.isLiverpool).slice(0, 3)
+      }))
+    );
 
-    // Load recent fixtures
-    this.statsService.getRecentFixtures().subscribe({
-      next: (data) => {
-        this.recentFixtures = data.slice(0, 3);
-      },
-      error: (error) => console.error('Error loading recent fixtures:', error)
-    });
-
-    // Load top scorers
-    this.statsService.getTopScorers().subscribe({
-      next: (data) => {
-        this.topScorers = data.slice(0, 5);
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading top scorers:', error);
-        this.loading = false;
-      }
-    });
-  }
-
-  formatDate(date: Date | undefined): string {
-    if (!date) return '';
-    return new Date(date).toLocaleDateString();
+    this.posts$ = blogService.getPublishedPosts(0, 3).pipe(
+      map(page => page.content ?? []),
+      catchError(() => of([]))
+    );
   }
 }

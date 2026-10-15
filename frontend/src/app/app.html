@@ -1,34 +1,85 @@
-<nav class="navbar">
-  <div class="nav-container">
-    <a routerLink="/" class="nav-logo">
-      <span>⚽ Liverpool FC Hub</span>
-    </a>
-    
-    <div class="nav-menu">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">Home</a>
-      <a routerLink="/blog" routerLinkActive="active" class="nav-link">Blog</a>
-      <a routerLink="/stats" routerLinkActive="active" class="nav-link">Stats</a>
-      <a routerLink="/admin" routerLinkActive="active" class="nav-link" *ngIf="authService.isAdmin()">Admin</a>
-    </div>
-
-    <div class="nav-auth">
-      <div *ngIf="authService.isLoggedIn(); else notLoggedIn" class="auth-section">
-        <span class="welcome-text">Welcome, {{ authService.getUser().username }}</span>
-        <button (click)="logout()" class="btn btn-outline">Logout</button>
-      </div>
-      <ng-template #notLoggedIn>
-        <a routerLink="/login" class="btn btn-primary">Login</a>
-      </ng-template>
-    </div>
+<div class="top-strip" *ngIf="nextMatch$ | async as next">
+  <div class="container strip-inner">
+    <span class="strip-label">Next match</span>
+    <span class="strip-match">
+      {{ next.home.shortName }} <span class="strip-v">v</span> {{ next.away.shortName }}
+    </span>
+    <span class="strip-detail">{{ next.date | date: 'EEE d MMM, HH:mm' }} · {{ next.competition }}</span>
+    <a routerLink="/fixtures" class="strip-link">All fixtures →</a>
   </div>
-</nav>
+</div>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a routerLink="/" class="brand" (click)="menuOpen = false">
+      <img [src]="crestUrl" alt="" class="brand-crest" width="48" height="48" />
+      <span class="brand-text">
+        <span class="brand-name">Liverpool FC</span>
+        <span class="brand-sub">Fan Hub</span>
+      </span>
+    </a>
+
+    <button
+      class="menu-toggle"
+      type="button"
+      (click)="menuOpen = !menuOpen"
+      [attr.aria-expanded]="menuOpen"
+      aria-controls="site-nav"
+      aria-label="Toggle navigation"
+    >
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav id="site-nav" class="site-nav" [class.open]="menuOpen" aria-label="Main">
+      <a *ngFor="let link of navLinks"
+         [routerLink]="link.path"
+         routerLinkActive="active"
+         [routerLinkActiveOptions]="{ exact: link.path === '/' }"
+         class="nav-link"
+         (click)="menuOpen = false">{{ link.label }}</a>
+      <a routerLink="/admin" routerLinkActive="active" class="nav-link" *ngIf="authService.isAdmin()" (click)="menuOpen = false">Admin</a>
+
+      <div class="nav-auth">
+        <ng-container *ngIf="authService.isLoggedIn(); else notLoggedIn">
+          <span class="welcome-text">Hi, {{ authService.getUser().username }}</span>
+          <button (click)="logout()" class="btn btn-auth" type="button">Log out</button>
+        </ng-container>
+        <ng-template #notLoggedIn>
+          <a routerLink="/login" class="btn btn-auth" (click)="menuOpen = false">Log in</a>
+        </ng-template>
+      </div>
+    </nav>
+  </div>
+</header>
 
 <main class="main-content">
   <router-outlet></router-outlet>
 </main>
 
-<footer class="footer">
-  <div class="footer-content">
-    <p>&copy; 2024 Liverpool FC Hub. You'll Never Walk Alone.</p>
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <img [src]="crestUrl" alt="" width="56" height="56" />
+      <p class="ynwa">You'll Never Walk Alone</p>
+      <p class="footer-note">An unofficial fan site. Not affiliated with Liverpool Football Club.</p>
+    </div>
+
+    <div>
+      <h4>Explore</h4>
+      <ul>
+        <li *ngFor="let link of navLinks"><a [routerLink]="link.path">{{ link.label }}</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h4>Data</h4>
+      <ul>
+        <li>Fixtures, results, table, squad and news from <a href="https://www.espn.com/soccer/team/_/id/364/liverpool" target="_blank" rel="noopener">ESPN</a></li>
+        <li>Fan blog posts by Hub members</li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>&copy; {{ year }} Liverpool FC Fan Hub</span>
   </div>
 </footer>

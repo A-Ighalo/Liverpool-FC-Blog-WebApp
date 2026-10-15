@@ -1,0 +1,54 @@
+# Local development stack: PostgreSQL + Spring Boot backend + Angular frontend.
+# Usage: docker compose up -d   (frontend: http://localhost:4200, API: http://localhost:8080)
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: liverpool_fc_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d liverpool_fc_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    image: maven:3.9-eclipse-temurin-17
+    working_dir: /app
+    command: mvn -q spring-boot:run
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/liverpool_fc_db
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+      - backend-target:/app/target
+      - maven-repo:/root/.m2
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    image: node:22
+    working_dir: /app
+    command: sh -c "npm ci && npx ng serve --host 0.0.0.0 --port 4200 --poll 2000"
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+      - frontend-node-modules:/app/node_modules
+      - frontend-angular-cache:/app/.angular
+    depends_on:
+      - backend
+
+volumes:
+  db-data:
+  backend-target:
+  maven-repo:
+  frontend-node-modules:
+  frontend-angular-cache:
