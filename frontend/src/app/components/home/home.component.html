@@ -102,8 +102,10 @@
             <tr *ngFor="let row of rows" [class.highlight]="row.team.id === liverpoolId">
               <td>{{ row.rank }}</td>
               <td class="club">
-                <img *ngIf="row.team.logo" [src]="row.team.logo" alt="" width="22" height="22" loading="lazy" />
-                {{ row.team.shortName }}
+                <span class="club-cell">
+                  <img *ngIf="row.team.logo" [src]="row.team.logo" alt="" width="22" height="22" loading="lazy" />
+                  {{ row.team.shortName }}
+                </span>
               </td>
               <td>{{ row.played }}</td>
               <td>{{ row.goalDifference }}</td>
