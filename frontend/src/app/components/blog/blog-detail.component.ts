@@ -77,7 +77,7 @@ import { BlogPost } from '../../models/blog.model';
     }
 
     .article-header h1 {
-      color: #00263E;
+      color: var(--text);
       font-size: 2.5rem;
       margin-bottom: 15px;
       line-height: 1.2;

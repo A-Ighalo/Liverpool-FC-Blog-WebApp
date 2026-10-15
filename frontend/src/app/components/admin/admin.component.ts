@@ -97,7 +97,7 @@ import { AuthService } from '../../services/auth.service';
     }
 
     .admin-card h3 {
-      color: #00263E;
+      color: var(--text);
       margin-bottom: 15px;
       font-size: 1.5rem;
     }
@@ -135,7 +135,7 @@ import { AuthService } from '../../services/auth.service';
     }
 
     .admin-info h3 {
-      color: #00263E;
+      color: var(--text);
       margin-bottom: 15px;
     }
 
