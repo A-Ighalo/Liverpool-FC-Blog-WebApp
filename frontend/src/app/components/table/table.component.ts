@@ -43,9 +43,11 @@ import { TableRow } from '../../models/live.model';
                       {{ row.rank }}
                     </td>
                     <td class="club">
-                      <img *ngIf="row.team.logo" [src]="row.team.logo" alt="" width="26" height="26" loading="lazy" />
-                      <span class="full">{{ row.team.name }}</span>
-                      <span class="short">{{ row.team.shortName }}</span>
+                      <span class="club-cell">
+                        <img *ngIf="row.team.logo" [src]="row.team.logo" alt="" width="26" height="26" loading="lazy" />
+                        <span class="full">{{ row.team.name }}</span>
+                        <span class="short">{{ row.team.shortName }}</span>
+                      </span>
                     </td>
                     <td>{{ row.played }}</td>
                     <td>{{ row.won }}</td>
@@ -124,6 +126,11 @@ import { TableRow } from '../../models/live.model';
     }
 
     td.club {
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .club-cell {
       display: flex;
       align-items: center;
       gap: 12px;
@@ -131,7 +138,7 @@ import { TableRow } from '../../models/live.model';
       white-space: nowrap;
     }
 
-    td.club img {
+    .club-cell img {
       width: 26px;
       height: 26px;
       object-fit: contain;

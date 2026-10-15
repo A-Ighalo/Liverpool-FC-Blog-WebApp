@@ -1,238 +1,179 @@
-# Liverpool FC Stats & Blog Platform
+# Liverpool FC Fan Hub
 
-A full-stack web application for Liverpool FC fans featuring player statistics, match fixtures, and blog content management.
+A full-stack web app for Liverpool FC supporters. It shows **live** fixtures, results, the Premier League table, the squad and the latest news, alongside a fan blog that signed-in members can write for.
 
-## 🏗️ Architecture
+**Built with:** Angular · TypeScript · Java · Spring Boot · PostgreSQL · Docker · AWS-ready
 
-**Backend:** Java Spring Boot with PostgreSQL and JWT authentication  
-**Frontend:** Angular with TypeScript  
-**Deployment:** AWS Elastic Beanstalk (backend) + S3/CloudFront (frontend)
+![Home page](docs/screenshots/home.png)
 
-## ⚽ Features
+| Fixtures & results | League table |
+| --- | --- |
+| ![Fixtures](docs/screenshots/fixtures.png) | ![Table](docs/screenshots/table.png) |
 
-### Public Features
-- **Home Dashboard:** Latest news, upcoming fixtures, recent results, and top scorers
-- **Blog:** Published articles with search and pagination
-- **Player Statistics:** Current season stats, top scorers, and assists leaderboards
-- **Match Fixtures:** Upcoming matches and recent results
+## What it does
 
-### Admin Features (JWT Protected)
-- **Blog Management:** Create, edit, and publish blog posts
-- **Player Stats Management:** Update player statistics and performance data
-- **Fixture Management:** Add matches and update scores
-- **User Management:** Manage user roles and permissions
+- **Live match centre:** last result, next matches, recent form, and kick-off times shown in your own time zone
+- **Fixtures, results and league table:** every competition, kept up to date automatically
+- **Squad and stats:** the first team by position, the season record, and the league's top scorers with Liverpool players highlighted
+- **News:** the latest Liverpool headlines and match reports
+- **Fan blog:** posts stored in the app's own database; members can publish and admins can moderate
+- **Works on any screen:** laptop, tablet and phone
 
-## 🚀 Quick Start
+## How it works
 
-### Prerequisites
-- Java 17+
-- Node.js 18+
-- PostgreSQL 12+
-- Maven 3.6+
+The app has three parts: the **website** people see, a **server** that handles logins and data, and a **database** that stores users and blog posts. Live football data comes from ESPN's free public sports feed.
 
-### Backend Setup (Spring Boot)
+```mermaid
+flowchart LR
+    User(["Fan's browser"])
 
-1. **Clone and navigate to backend:**
-   ```bash
-   cd backend
-   ```
+    subgraph App["Liverpool FC Fan Hub"]
+        direction LR
+        Web["Website<br/><i>Angular</i>"]
+        API["Server<br/><i>Java / Spring Boot</i>"]
+        Cache[("5-minute<br/>cache")]
+        DB[("Database<br/><i>PostgreSQL</i>")]
+    end
 
-2. **Configure database:**
-   ```bash
-   # Create PostgreSQL database
-   createdb liverpool_fc_db
-   
-   # Update application.properties with your database credentials
-   ```
+    ESPN["ESPN public<br/>sports data"]
 
-3. **Run the application:**
-   ```bash
-   mvn spring-boot:run
-   ```
-
-   Backend API will be available at `http://localhost:8080`
-
-### Frontend Setup (Angular)
-
-1. **Navigate to frontend and install dependencies:**
-   ```bash
-   cd frontend
-   npm install
-   ```
-
-2. **Start development server:**
-   ```bash
-   npm start
-   ```
-
-   Frontend will be available at `http://localhost:4200`
-
-## 📊 API Endpoints
-
-### Authentication
-- `POST /api/auth/signin` - User login
-- `POST /api/auth/signup` - User registration
-
-### Public Endpoints
-- `GET /api/blog/public/posts` - Get published blog posts
-- `GET /api/fixtures/public/all` - Get all fixtures
-- `GET /api/stats/public/top-scorers` - Get top scorers
-
-### Protected Endpoints (Requires JWT)
-- `POST /api/blog/posts` - Create blog post
-- `PUT /api/blog/posts/{id}` - Update blog post
-- `DELETE /api/blog/posts/{id}` - Delete blog post (Admin only)
-
-## 🏢 Database Schema
-
-### Users Table
-- `id` (Primary Key)
-- `username` (Unique)
-- `email` (Unique)
-- `password` (Encrypted)
-- `roles` (USER, ADMIN)
-
-### Blog Posts Table
-- `id` (Primary Key)
-- `title`
-- `summary`
-- `content`
-- `image_url`
-- `is_published`
-- `author_id` (Foreign Key)
-
-### Player Stats Table
-- `id` (Primary Key)
-- `player_name`
-- `position`
-- `goals`
-- `assists`
-- `appearances`
-- `season`
-
-### Fixtures Table
-- `id` (Primary Key)
-- `home_team`
-- `away_team`
-- `match_date`
-- `competition`
-- `status`
-
-## 🚀 AWS Deployment
-
-### Backend Deployment (Elastic Beanstalk)
-
-1. **Build the application:**
-   ```bash
-   cd backend
-   mvn clean package
-   ```
-
-2. **Deploy to Elastic Beanstalk:**
-   ```bash
-   eb init
-   eb create liverpool-fc-backend
-   eb deploy
-   ```
-
-3. **Set environment variables:**
-   - `DATABASE_URL`
-   - `DATABASE_USERNAME`
-   - `DATABASE_PASSWORD`
-   - `JWT_SECRET`
-   - `CORS_ALLOWED_ORIGINS`
-
-### Frontend Deployment (S3 + CloudFront)
-
-1. **Build for production:**
-   ```bash
-   cd frontend
-   npm run build
-   ```
-
-2. **Deploy to S3:**
-   ```bash
-   aws s3 sync dist/frontend/ s3://your-bucket-name
-   ```
-
-3. **Configure CloudFront distribution for the S3 bucket**
-
-## 🔧 Development
-
-### Backend Development
-- Uses Spring Boot 3.1.5 with Java 17
-- JWT-based authentication with role-based access control
-- PostgreSQL with JPA/Hibernate for data persistence
-- RESTful API design with proper HTTP status codes
-
-### Frontend Development
-- Angular 17 with standalone components
-- TypeScript for type safety
-- Responsive design with CSS Grid and Flexbox
-- HTTP interceptors for JWT token handling
-- Route guards for authentication and authorization
-
-### Key Components
-- **AuthService:** Handles login, logout, and token management
-- **BlogService:** Manages blog post operations
-- **StatsService:** Handles player statistics and fixtures
-- **Guards:** Protect routes based on authentication and roles
-
-## 🎨 UI/UX Features
-
-- **Liverpool FC Branding:** Official red (#C8102E) and gold (#F6EB14) colors
-- **Responsive Design:** Mobile-first approach with breakpoints
-- **Loading States:** Spinner animations for better user experience
-- **Error Handling:** User-friendly error messages
-- **Accessibility:** Semantic HTML and proper ARIA labels
-
-## 🔒 Security Features
-
-- **JWT Authentication:** Secure token-based authentication
-- **Password Encryption:** BCrypt hashing for user passwords
-- **CORS Configuration:** Proper cross-origin resource sharing setup
-- **Role-based Access:** Admin-only endpoints for sensitive operations
-- **Input Validation:** Server-side validation for all inputs
-
-## 📱 Mobile Responsiveness
-
-The application is fully responsive and optimized for:
-- Desktop (1200px+)
-- Tablet (768px - 1199px)
-- Mobile (320px - 767px)
-
-## 🧪 Testing
-
-### Backend Testing
-```bash
-cd backend
-mvn test
+    User --> Web
+    Web -- "requests data" --> API
+    API -- "users & blog posts" --> DB
+    API -- "fixtures, table, news, squad" --> Cache
+    Cache -. "refreshes when stale" .-> ESPN
 ```
 
-### Frontend Testing
-```bash
-cd frontend
-npm test
+| Part | Responsibility |
+| --- | --- |
+| **Website** (Angular) | Pages, navigation and layout. Sends every data request to the server. |
+| **Server** (Spring Boot) | Logins and permissions, blog features, and fetching live football data. |
+| **Database** (PostgreSQL) | User accounts, roles and blog posts. |
+| **ESPN feed** | Fixtures, results, the table, the squad, news and player stats. Free, no API key. |
+
+### Live data: fast and resilient
+
+The server sits between the website and ESPN instead of letting browsers call ESPN directly. That's needed because ESPN blocks direct browser requests, and it has two side benefits: pages load faster, and the site keeps working when ESPN has a hiccup.
+
+```mermaid
+sequenceDiagram
+    participant W as Website
+    participant S as Server
+    participant E as ESPN
+
+    W->>S: Get the fixtures
+    alt Saved copy is under 5 minutes old
+        S-->>W: Return saved copy (instant)
+    else Saved copy is older, or there is none
+        S->>E: Fetch latest fixtures
+        alt ESPN responds
+            E-->>S: Fresh data
+            S-->>W: Return and save for next time
+        else ESPN is down
+            S-->>W: Return last saved copy
+        end
+    end
 ```
 
-## 🤝 Contributing
+### Logins and permissions
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+Passwords are stored encrypted. After signing in, the browser holds a secure token (a JWT) that proves who the user is. It sends this token only to our own server, never to outside sites.
 
-## 📄 License
+```mermaid
+sequenceDiagram
+    participant U as Fan
+    participant W as Website
+    participant S as Server
+    participant D as Database
 
-This project is licensed under the MIT License.
+    U->>W: Enter username and password
+    W->>S: Sign in
+    S->>D: Look up user, check encrypted password
+    S-->>W: Signed token, plus the user's role (Member or Admin)
+    Note over W: Token is kept in the browser
+    U->>W: Publish a blog post
+    W->>S: Request plus token
+    S->>S: Check token and role
+    S->>D: Save post
+    S-->>W: Done
+```
 
-## 🙏 Acknowledgments
+**Roles:** anyone can browse, members can write blog posts, and admins can also delete posts and manage stored fixtures and stats.
 
-- Liverpool FC for inspiration
-- Spring Boot and Angular communities
-- AWS for cloud infrastructure
+### Hosting
+
+**Locally**, one command runs everything in Docker. **In the cloud**, the project is set up for AWS:
+
+```mermaid
+flowchart LR
+    User(["Fans"]) --> CDN["CloudFront + S3<br/><i>serves the website</i>"]
+    CDN --> EB["Elastic Beanstalk<br/><i>runs the server</i>"]
+    EB --> RDS[("RDS<br/><i>PostgreSQL database</i>")]
+    EB --> ESPN["ESPN feed"]
+```
+
+## Run it locally
+
+You only need [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+
+```bash
+git clone https://github.com/A-Ighalo/Liverpool-FC-Blog-WebApp.git
+cd Liverpool-FC-Blog-WebApp
+docker compose up -d
+```
+
+Open **http://localhost:4200**. The first start takes a few minutes while dependencies download. Stop everything with `docker compose down`.
+
+<details>
+<summary>Running without Docker, creating an admin, and API endpoints</summary>
+
+**Without Docker** you need Java 17, Maven, Node.js 20.19+ and PostgreSQL. Create a database called `liverpool_fc_db`, then:
+
+```bash
+cd backend && mvn spring-boot:run          # terminal 1: server on http://localhost:8080
+cd frontend && npm install && npm start     # terminal 2: website on http://localhost:4200
+```
+
+**Make an account an admin.** New accounts start as members:
+
+```bash
+curl -X POST http://localhost:8080/api/auth/signup -H "Content-Type: application/json" \
+  -d '{"username":"admin","email":"admin@example.com","password":"changeme123"}'
+
+docker compose exec db psql -U postgres -d liverpool_fc_db -c \
+  "INSERT INTO user_roles (user_id, roles) SELECT id, 'ADMIN' FROM users WHERE username = 'admin';"
+```
+
+**Main API endpoints** (all under `/api`):
+
+| Area | Endpoints |
+| --- | --- |
+| Accounts | `POST /auth/signup`, `POST /auth/signin` |
+| Live data | `GET /live/public/fixtures`, `/results`, `/table`, `/news`, `/squad`, `/leaders` |
+| Blog | `GET /blog/public/posts`, `/public/posts/{id}`, `/public/posts/search`; `POST /blog/posts`, `PUT /blog/posts/{id}` (members); `DELETE /blog/posts/{id}` (admins) |
+| Stored fixtures and stats | `GET /fixtures/public/...`, `GET /stats/public/...`; create, update and delete are admin-only |
+
+**Tests:** `cd backend && mvn test`, `cd frontend && npm test`
+
+</details>
+
+## Project layout
+
+```
+backend/    Java server: logins, blog, live-data proxy
+frontend/   Angular website: pages, styling, data services
+aws/        Cloud hosting configuration
+docs/       Screenshots
+docker-compose.yml   Runs the whole app locally
+```
+
+## Roadmap
+
+- Sign-up page and blog editor in the website (both work through the API today)
+- Full admin dashboard (currently a placeholder)
+- Configurable server address for cloud deployment (currently set to `localhost`)
+- Broader automated test coverage
 
 ---
 
-**You'll Never Walk Alone** ⚽🔴
+*An unofficial fan project, not affiliated with Liverpool Football Club. Match data courtesy of ESPN.*
